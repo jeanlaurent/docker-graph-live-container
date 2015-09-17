@@ -23,24 +23,27 @@ public class Machines {
         hosts.values().forEach(action);
     }
 
-    public String toGraphviz() {
+    public String toGraphviz(String host) {
         StringBuilder builder = new StringBuilder();
         builder.append("digraph dockerView {\n");
         builder.append("\trankdir=LR;\n");
         builder.append("\tsize=\"8,5\";\n");
         builder.append("\tnode [shape = circle];\n");
+        builder.append("\tsubgraph clusterA {\n");
+        builder.append("\t\tlabel=\"" + host + "\"\n");
         List<String> visited = new ArrayList<>();
         forEach(m -> m.links.forEach(link -> {
                     visited.add(m.name);
                     visited.add(link.name);
-                    builder.append("\t\"" + m.name + "\" -> \"" + link.name + "\" [ label=\"" + link.ports.get(0) + "\" ];\n");
+                    builder.append("\t\t\"" + m.name + "\" -> \"" + link.name + "\" [ label=\"" + link.ports.get(0) + "\" ];\n");
                 })
         );
         forEach(m -> {
             if (!visited.contains(m.name)) {
-                builder.append("\t\"" + m.name + "\"");
+                builder.append("\t\t\"" + m.name + "\"\n");
             }
         });
+        builder.append("\t}\n");
         builder.append("}\n");
         return builder.toString();
     }

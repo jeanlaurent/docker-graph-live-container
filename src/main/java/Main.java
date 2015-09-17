@@ -18,7 +18,6 @@ public class Main {
 
     public static void main(String[] args) throws DockerCertificateException, DockerException, InterruptedException, IOException {
         final DockerClient docker = DefaultDockerClient.fromEnv().build();
-        System.out.println(docker.info());
         final List<ContainerInfo> infos = new ArrayList<>();
         List<Container> containers = docker.listContainers(DockerClient.ListContainersParam.allContainers(false));
         containers.forEach(c -> {
@@ -51,10 +50,10 @@ public class Main {
             }
         });
 
-        System.out.println(machines.toGraphviz());
+        System.out.println(machines.toGraphviz(docker.getHost()));
 
         System.out.println("Outputing output.dot");
-        Files.write(machines.toGraphviz(), new File("output.dot"), Charsets.UTF_8);
+        Files.write(machines.toGraphviz(docker.getHost()), new File("output.dot"), Charsets.UTF_8);
         System.out.println("Outputing output.png");
         Runtime.getRuntime().exec(new String[]{"dot", "-Tpng", "-ooutput.png", "output.dot"});
     }
