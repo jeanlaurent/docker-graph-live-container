@@ -1,0 +1,17 @@
+digraph dockerView {
+	rankdir=LR;
+	size="8,5";
+	node [shape = circle];
+
+	subgraph clusterA {
+		label="192.168.99.100";
+		"/webshop_app" -> "/webshop_db"    [ label="27017/tcp" ];
+		"/webshop_proxy" -> "/webshop_app" [ label="4242/tcp" ];
+		"/high_kalam";
+	}
+
+	"myLapTop" [ shape = square ];
+	"myLapTop" -> "/webshop_proxy" [ label =  "80/tcp" ];
+	"myLapTop" -> "/webshop_proxy" [ label = "443/tcp" ];
+
+}
