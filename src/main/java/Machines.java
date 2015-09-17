@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -17,7 +19,7 @@ public class Machines {
         return hosts.get(name);
     }
 
-    public void forEach(Consumer<? super  Machine> action) {
+    public void forEach(Consumer<? super Machine> action) {
         hosts.values().forEach(action);
     }
 
@@ -27,10 +29,18 @@ public class Machines {
         builder.append("\trankdir=LR;\n");
         builder.append("\tsize=\"8,5\";\n");
         builder.append("\tnode [shape = circle];\n");
-        forEach(m ->  m.links.forEach(link ->
-                builder.append("\t\"" + m.name + "\" -> \"" + link.name + "\" [ label=\"" + link.ports.get(0) + "\" ];\n")
-            )
+        List<String> visited = new ArrayList<>();
+        forEach(m -> m.links.forEach(link -> {
+                    visited.add(m.name);
+                    visited.add(link.name);
+                    builder.append("\t\"" + m.name + "\" -> \"" + link.name + "\" [ label=\"" + link.ports.get(0) + "\" ];\n");
+                })
         );
+        forEach(m -> {
+            if (!visited.contains(m.name)) {
+                builder.append("\t\"" + m.name + "\"");
+            }
+        });
         builder.append("}\n");
         return builder.toString();
     }
