@@ -1,3 +1,5 @@
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificateException;
 import com.spotify.docker.client.DockerClient;
@@ -5,6 +7,8 @@ import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerInfo;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +16,9 @@ import java.util.Map;
 
 public class Main {
 
-    public static void main(String[] args) throws DockerCertificateException, DockerException, InterruptedException {
+    public static void main(String[] args) throws DockerCertificateException, DockerException, InterruptedException, IOException {
         final DockerClient docker = DefaultDockerClient.fromEnv().build();
+        System.out.println(docker.info());
         final List<ContainerInfo> infos = new ArrayList<>();
         List<Container> containers = docker.listContainers(DockerClient.ListContainersParam.allContainers(false));
         containers.forEach(c -> {
@@ -45,8 +50,13 @@ public class Main {
                 machines.get(key).addLink(destinationMachine);
             }
         });
-        machines.forEach(System.out::println);
+
         System.out.println(machines.toGraphviz());
+
+        System.out.println("Outputing output.dot");
+        Files.write(machines.toGraphviz(), new File("output.dot"), Charsets.UTF_8);
+        System.out.println("Outputing output.png");
+        Runtime.getRuntime().exec(new String[]{"dot", "-Tpng", "-ooutput.png", "output.dot"});
     }
 
 
